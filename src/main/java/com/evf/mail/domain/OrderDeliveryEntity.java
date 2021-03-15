@@ -2,141 +2,138 @@ package com.evf.mail.domain;
 
 import java.io.Serializable;
 import java.util.UUID;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="order_details")
-public class OrderDeliveryEntity  extends AbstractAuditingEntity implements Serializable  {
-	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+@Table(name = "order_details")
+public class OrderDeliveryEntity extends AbstractAuditingEntity implements Serializable {
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	@Id
-	@Column(name="id",columnDefinition = "BINARY(16)")
-	private UUID id = UUID.randomUUID();
-	
-	@Column(name="first_name")
-	private String firstName;
-	
-	@Column(name="last_name")
-	private String lastName;
-	
-	@Column(name="address")
-	private String address;
-	
-	@Column(name="phone")
-	private String phone;
-	
-	@Column(name="zipcode")
-	private Long zipcode;
-	
-	@Column(name="quantity")
-	private Long quantity;
-	
-	@Column(name="sub_total")
-	private String subTotal;
-	
-	@Column(name="tip")
-	private String tip;
-	
-	@Column(name="order_from")
-	private String orderFrom;
-	
-	@Column(name="order_id")
-	private String orderId;
+    @Id
+    @Column(name = "id", columnDefinition = "BINARY(16)")
+    private String id = UUID.randomUUID().toString();
 
-	public UUID getId() {
-		return id;
-	}
+    @Column(name = "first_name")
+    private String firstName;
 
-	public void setId(UUID id) {
-		this.id = id;
-	}
+    @Column(name = "last_name")
+    private String lastName;
 
-	public String getFirstName() {
-		return firstName;
-	}
+    @Column(name = "address")
+    private String address;
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    @Column(name = "phone")
+    private String phone;
 
-	public String getLastName() {
-		return lastName;
-	}
+    @Column(name = "zipcode")
+    private Long zipcode;
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    @Column(name = "quantity")
+    private Long quantity;
 
-	public String getAddress() {
-		return address;
-	}
+    @Column(name = "sub_total")
+    private String subTotal;
 
-	public void setAddress(String address) {
-		this.address = address;
-	}
+    @Column(name = "tip")
+    private String tip;
 
-	public String getPhone() {
-		return phone;
-	}
+    @Column(name = "order_from")
+    private String orderFrom;
 
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
+    @Column(name = "order_id")
+    private String orderId;
 
-	public Long getZipcode() {
-		return zipcode;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setZipcode(Long zipcode) {
-		this.zipcode = zipcode;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public Long getQuantity() {
-		return quantity;
-	}
+    public String getFirstName() {
+        return firstName;
+    }
 
-	public void setQuantity(Long quantity) {
-		this.quantity = quantity;
-	}
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-	public String getSubTotal() {
-		return subTotal;
-	}
+    public String getLastName() {
+        return lastName;
+    }
 
-	public void setSubTotal(String subTotal) {
-		this.subTotal = subTotal;
-	}
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
-	public String getTip() {
-		return tip;
-	}
+    public String getAddress() {
+        return address;
+    }
 
-	public void setTip(String tip) {
-		this.tip = tip;
-	}
+    public void setAddress(String address) {
+        this.address = address;
+    }
 
-	public String getOrderFrom() {
-		return orderFrom;
-	}
+    public String getPhone() {
+        return phone;
+    }
 
-	public void setOrderFrom(String orderFrom) {
-		this.orderFrom = orderFrom;
-	}
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
-	public String getOrderId() {
-		return orderId;
-	}
+    public Long getZipcode() {
+        return zipcode;
+    }
 
-	public void setOrderId(String orderId) {
-		this.orderId = orderId;
-	}
+    public void setZipcode(Long zipcode) {
+        this.zipcode = zipcode;
+    }
 
+    public Long getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getSubTotal() {
+        return subTotal;
+    }
+
+    public void setSubTotal(String subTotal) {
+        this.subTotal = subTotal;
+    }
+
+    public String getTip() {
+        return tip;
+    }
+
+    public void setTip(String tip) {
+        this.tip = tip;
+    }
+
+    public String getOrderFrom() {
+        return orderFrom;
+    }
+
+    public void setOrderFrom(String orderFrom) {
+        this.orderFrom = orderFrom;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
 }

@@ -153,4 +153,25 @@
             <column name="local_date" type="date"/>
         </createTable>
     </changeSet>
+        <changeSet author="EVF" id="00000000000003">
+<createTable tableName="order_details">
+            <column name="id" type="varchar(50)" >
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="first_name" type="varchar(50)"/>
+            <column name="last_name" type="varchar(50)"/>
+            <column name="address" type="varchar(999)"/>
+            <column name="phone" type="varchar(50)"/>
+            <column name="zipcode" type="varchar(50)"/>
+            <column name="quantity" type="varchar(50)"/>
+             <column name="sub_total" type="varchar(50)"/>
+              <column name="tip" type="varchar(50)"/>
+               <column name="order_id" type="varchar(50)"/>
+            <column name="order_from" type="varchar(191)"/>
+             <column name="created_by" type="varchar(50)"/>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_by" type="varchar(50)"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

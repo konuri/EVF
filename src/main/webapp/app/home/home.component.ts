@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { LoginModalService } from 'app/core/login/login-modal.service';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/user/account.model';
+import { HomeService } from './home.service';
 
 @Component({
   selector: 'jhi-home',
@@ -13,11 +14,29 @@ import { Account } from 'app/core/user/account.model';
 export class HomeComponent implements OnInit, OnDestroy {
   account: Account | null = null;
   authSubscription?: Subscription;
-
-  constructor(private accountService: AccountService, private loginModalService: LoginModalService) {}
+  columnsHeaders = [
+    'Order Id',
+    'Order From',
+    'First Name',
+    'Last Name',
+    'Total Items',
+    'Total Amount Paid',
+    'Tip',
+    'Address',
+    'Zip Code',
+    'Phone',
+  ];
+  columnKeys = ['orderId', 'orderFrom', 'firstName', 'lastName', 'quantity', 'subTotal', 'tip', 'address', 'zipcode', 'phone'];
+  rows = [];
+  page = 1;
+  pageSize = 25;
+  constructor(private accountService: AccountService, private loginModalService: LoginModalService, private homeService: HomeService) {}
 
   ngOnInit(): void {
     this.authSubscription = this.accountService.getAuthenticationState().subscribe(account => (this.account = account));
+    this.homeService.getOrderDetails().subscribe(response => {
+      this.rows = response;
+    });
   }
 
   isAuthenticated(): boolean {
