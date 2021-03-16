@@ -1,33 +1,39 @@
 package com.evf.mail.tempaltes;
 
 import com.evf.mail.domain.OrderDeliveryEntity;
+import com.evf.mail.service.MailContentExtraction;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
-public class Drizly {
+@Component("Drizly")
+public class Drizly implements MailContentExtraction {
+    private final Logger log = LoggerFactory.getLogger(Drizly.class);
 
-    public static OrderDeliveryEntity getDrizlyDetails(Document doc) {
+    public OrderDeliveryEntity extractContent(Document doc) {
         Elements tables = doc.select("table");
         String orderId = getValue(tables, 2, "Drizly Order #:").trim();
-        System.out.println("orderId\t = " + orderId);
+        log.info("orderId\t = " + orderId);
         Integer quantity = getProductsCount(tables, 5);
-        System.out.println("quantity\t = " + quantity);
+        log.info("quantity\t = " + quantity);
         String subTotal = getValue(tables, 6, "Total").trim();
-        System.out.println("subTotal\t = " + subTotal);
+        log.info("subTotal\t = " + subTotal);
         String tip = getValue(tables, 6, "Tip").trim();
-        System.out.println("Tip\t = " + tip);
+        log.info("Tip\t = " + tip);
         String fullName = getValue(tables, 4, "username").trim();
         String firstName = fullName.split(" ")[0];
         String lastName = fullName.replace(firstName, "");
-        System.out.println("fullName\t = " + fullName);
+        log.info("fullName\t = " + fullName);
         String zipcode = getValue(tables, 4, "code").trim();
-        System.out.println("zip code\t = " + zipcode);
+        log.info("zip code\t = " + zipcode);
         String phone = getValue(tables, 4, "phone").trim();
-        System.out.println("Phone Number\t = " + phone);
+        log.info("Phone Number\t = " + phone);
         String address = getValue(tables, 4, "deliverydress").trim().replace(fullName, "").replace("Phone: " + phone, "");
-        System.out.println("Delivery Address\t = " + address);
+        log.info("Delivery Address\t = " + address);
         OrderDeliveryEntity orderDeliveryEntity = new OrderDeliveryEntity();
 
         orderDeliveryEntity.setFirstName(firstName);
