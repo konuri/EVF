@@ -32,7 +32,7 @@ public class DatabaseConfiguration {
      * @return the H2 database TCP server.
      * @throws SQLException if the server failed to start.
      */
-  /*  @Bean(initMethod = "start", destroyMethod = "stop")
+    @Bean(initMethod = "start", destroyMethod = "stop")
     @Profile(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT)
     public Object h2TCPServer() throws SQLException {
         String port = getValidPortForH2();
@@ -52,5 +52,5 @@ public class DatabaseConfiguration {
             }
         }
         return String.valueOf(port);
-    }*/
+    }
 }

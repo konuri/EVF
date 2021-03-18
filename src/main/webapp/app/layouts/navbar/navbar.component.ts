@@ -55,7 +55,7 @@ export class NavbarComponent implements OnInit {
   }
 
   login(): void {
-    this.loginModalService.open();
+    // this.loginModalService.open();
   }
 
   logout(): void {

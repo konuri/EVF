@@ -297,12 +297,6 @@
             <groupId>io.dropwizard.metrics</groupId>
             <artifactId>metrics-core</artifactId>
         </dependency>
-        <!-- jhipster-needle-maven-add-dependency -->
-        
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-mail</artifactId>
-		</dependency>
 		
 		<!-- https://mvnrepository.com/artifact/org.jsoup/jsoup -->
 		<dependency>
@@ -863,7 +857,7 @@
                     <artifactId>h2</artifactId>
                 </dependency>
             </dependencies>
-            <build>
+            <!-- <build>
                 <plugins>
                     <plugin>
                         <groupId>com.github.eirslett</groupId>
@@ -902,7 +896,7 @@
                         </executions>
                     </plugin>
                 </plugins>
-            </build>
+            </build> -->
             <properties>
                 <!-- default Spring profiles -->
                 <spring.profiles.active>dev${profile.no-liquibase}</spring.profiles.active>
