@@ -41,4 +41,7 @@ export class OrderSource implements DataSource<OrderDetails> {
     this.loadingSubject.complete();
     this.counterSubject.complete();
   }
+  sendforAutomation(id: string): Observable<any>{
+      return this.orderDetailsService.sendforAutomation(id);
+  }
 }

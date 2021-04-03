@@ -36,9 +36,9 @@ spring:
       indent-output: true
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:h2:file:./target/h2db/db/evf;DB_CLOSE_DELAY=-1
-    username: EVF
-    password:
+    url: jdbc:mysql://localhost:3306/EVF?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+    username: root
+    password: root
     hikari:
       poolName: Hikari
       auto-commit: false
@@ -113,5 +113,6 @@ jhipster:
 # More documentation is available at:
 # https://www.jhipster.tech/common-application-properties/
 # ===================================================================
-
-# application:
+key:
+ name: maxcash@gmail.com
+ value: Grubhub123! 

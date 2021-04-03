@@ -24,12 +24,36 @@ Main page styles
 
 table {
   width: 100%;
+   /* row spacing / margin */
+  border-spacing: 0 8px !important;
 }
 
 .mat-form-field {
   font-size: 14px;
   width: 100%;
 }
+
+mat-row, mat-header-row, mat-footer-row, th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
+  border-bottom-color: rgba(0,0,0,.12);
+  border-left: 1px solid;
+  border-top: 1px solid;
+  border-bottom: 1px solid;
+  border-right: 1px solid;
+  padding-left: 11px;
+  padding-right: 5px;
+  text-align: center;
+}
+
+.mat-header-cell {
+  color: #212529;
+  background: rgb(62 138 204 / 25%);
+}
+
+.mat-header-cell {
+  font-size: 14px;
+  font-weight: bold;
+}
+
 /* 
 td, th {
   width: 25%;

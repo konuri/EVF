@@ -1,20 +1,30 @@
 package com.evf.mail.tempaltes;
 
-import com.evf.mail.domain.OrderDeliveryEntity;
-import com.evf.mail.service.MailContentExtraction;
+import java.util.Map;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.evf.mail.domain.OrderDeliveryEntity;
+import com.evf.mail.domain.ShortNameAndTipDetails;
+import com.evf.mail.service.MailContentExtraction;
+import com.evf.mail.util.PhoneFormatter;
 
 @Component("Drizly")
 public class Drizly implements MailContentExtraction {
     private final Logger log = LoggerFactory.getLogger(Drizly.class);
 
+    @Autowired
+    Map<String,ShortNameAndTipDetails> areaShortNames;
+    
     public OrderDeliveryEntity extractContent(Document doc) {
+    	OrderDeliveryEntity orderDeliveryEntity = new OrderDeliveryEntity();
         Elements tables = doc.select("table");
         String orderId = getValue(tables, 2, "Drizly Order #:").trim();
         log.info("orderId\t = " + orderId);
@@ -30,21 +40,26 @@ public class Drizly implements MailContentExtraction {
         log.info("fullName\t = " + fullName);
         String zipcode = getValue(tables, 4, "code").trim();
         log.info("zip code\t = " + zipcode);
-        String phone = getValue(tables, 4, "phone").trim();
+        String phone = getValue(tables, 4, "phone").trim().replaceAll("[^0-9]", "");;
+        phone = new PhoneFormatter(phone).getPhoneNumber();
         log.info("Phone Number\t = " + phone);
-        String address = getValue(tables, 4, "deliverydress").trim().replace(fullName, "").replace("Phone: " + phone, "");
+        String address = getValue(tables, 4, "deliverydress").trim().replace(fullName, "").trim().replace("Phone: " + getValue(tables, 4, "phone").trim(), "");
         log.info("Delivery Address\t = " + address);
-        OrderDeliveryEntity orderDeliveryEntity = new OrderDeliveryEntity();
-
+        String apartment = getValue(tables, 4, "apartment").trim();
+        log.info("apartment\t = " + apartment);
+        orderDeliveryEntity.setFullName(fullName);
+        orderDeliveryEntity.setModifiedName(fullName.concat(areaShortNames.containsKey(zipcode) ?  " ("+areaShortNames.get(zipcode).getAreaShortName()+")" : ""));
         orderDeliveryEntity.setFirstName(firstName);
         orderDeliveryEntity.setLastName(lastName);
         orderDeliveryEntity.setAddress(address);
         orderDeliveryEntity.setPhone(phone);
         orderDeliveryEntity.setQuantity(quantity.longValue());
         orderDeliveryEntity.setSubTotal(subTotal);
-        orderDeliveryEntity.setTip(tip);
+        orderDeliveryEntity.setTip(areaShortNames.containsKey(zipcode) ?areaShortNames.get(zipcode).getTip():tip);
         orderDeliveryEntity.setOrderId(orderId);
         orderDeliveryEntity.setZipcode(Long.parseLong(zipcode));
+        orderDeliveryEntity.setFullName(fullName);
+        orderDeliveryEntity.setApartment(apartment);
         return orderDeliveryEntity;
     }
 
@@ -77,9 +92,23 @@ public class Drizly implements MailContentExtraction {
             } else if (tableData.text().startsWith("Delivery Address: ") && tableData.text().contains("Phone: ") && check.equals("phone")) {
                 String element = tableData.text().substring(tableData.text().indexOf("Phone:") + 6, tableData.text().length()).trim();
                 result = element.substring(0, element.indexOf(" ")).trim();
-            } else if (tableData.text().startsWith("Delivery Address: ") && check.equals("deliverydress")) {
-                result = tableData.select("td,br").get(0).text().replace("Delivery Address: ", "");
-            }
+            } else if (tableData.text().startsWith("Delivery Address: ")
+					&& check.equals("deliverydress")) {
+				String[] text=tableData.select("td").get(0).html().split("<br>");
+				//System.out.println(text.length);
+				if(text.length==6){
+					result=text[2]+" "+text[4];
+				}else{
+					result=text[2]+" "+text[3];
+				}
+			}else if (tableData.text().startsWith("Delivery Address: ")
+					&& check.equals("apartment")) {
+				String[] text=tableData.select("td").get(0).html().split("<br>");
+				//System.out.println(text.length);
+				if(text.length==6){
+						result=text[3];
+				}
+			}
         }
         return result;
     }

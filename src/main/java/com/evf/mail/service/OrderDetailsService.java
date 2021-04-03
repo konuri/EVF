@@ -4,7 +4,15 @@ import com.evf.mail.domain.OrderDeliveryEntity;
 import com.evf.mail.repository.OrderDeliveryRepository;
 import com.evf.mail.repository.OrderDetailsSpecification;
 import com.evf.mail.repository.SearchCriteria;
+
+import java.util.Optional;
+
+import javax.transaction.Transactional;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,11 +21,18 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class OrderDetailsService {
+	
+	private final Logger log = LoggerFactory.getLogger(OrderDetailsService.class);
+	
     private final OrderDeliveryRepository orderDeliveryRepository;
 
-    public OrderDetailsService(OrderDeliveryRepository orderDeliveryRepository) {
+    private final DoorDashSeleniumAutomation doorDashSeleniumAutomation;
+    
+    public OrderDetailsService(OrderDeliveryRepository orderDeliveryRepository,DoorDashSeleniumAutomation doorDashSeleniumAutomation) {
         this.orderDeliveryRepository = orderDeliveryRepository;
+        this.doorDashSeleniumAutomation = doorDashSeleniumAutomation;
     }
 
     public Page<OrderDeliveryEntity> getAllOrderDetails(Integer offset, Integer limit, String sortBy, String sortOrder, String filter) {
@@ -50,4 +65,19 @@ public class OrderDetailsService {
             return orderDeliveryRepository.findAll(or, pageable);
         }
     }
+
+	public boolean doordashAutoFilling(String id) {
+		boolean status=false;
+	    try{
+	    	Optional<OrderDeliveryEntity> orderdetails=orderDeliveryRepository.findById(id);
+	    	if(orderdetails.isPresent()){
+	    		status=doorDashSeleniumAutomation.doordashAutomation(orderdetails.get());
+	    		orderdetails.get().setDoordashStatus(status);
+	    	}
+	    	return status;
+	    }catch(Exception e){
+	    	log.error("Exception in doordashAutoFilling :: " + ExceptionUtils.getStackTrace(e));
+	    	return false;
+	    }
+	}
 }

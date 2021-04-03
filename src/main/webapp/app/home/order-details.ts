@@ -1,6 +1,6 @@
 export interface OrderDetails {
   id: string;
-  firstName: string;
+  fullName: string;
   lastName: string;
   address: string;
   phone: string;
@@ -10,4 +10,5 @@ export interface OrderDetails {
   tip: string;
   orderFrom: string;
   orderId: string;
+  doordashStatus: boolean
 }

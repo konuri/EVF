@@ -1,13 +1,8 @@
 package com.evf.mail.config;
 
-import io.github.jhipster.config.JHipsterConstants;
-import io.github.jhipster.config.h2.H2ConfigurationHelper;
-import java.sql.SQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -21,18 +16,30 @@ public class DatabaseConfiguration {
     private final Logger log = LoggerFactory.getLogger(DatabaseConfiguration.class);
 
     private final Environment env;
+    
+  
 
     public DatabaseConfiguration(Environment env) {
         this.env = env;
     }
 
+  /*  @Bean("areaShortNames")
+    public Map<String,ShortNameAndTipDetails> getAreaAndTipDetails(){
+    	 Map<String,ShortNameAndTipDetails> map=new HashMap<>();
+    	List<ShortNameAndTipDetails> shortNameAndTipDetails= shortNameAndTipDetailsRepository.findAll();
+    	Map<String, ShortNameAndTipDetails> result =
+    			shortNameAndTipDetails.stream().collect(Collectors.toMap(ShortNameAndTipDetails::getZipcode,
+    		                                              Function.identity()));
+    	System.out.println(result);
+    	return map;
+    }*/
     /**
      * Open the TCP port for the H2 database, so it is available remotely.
      *
      * @return the H2 database TCP server.
      * @throws SQLException if the server failed to start.
      */
-    @Bean(initMethod = "start", destroyMethod = "stop")
+   /* @Bean(initMethod = "start", destroyMethod = "stop")
     @Profile(JHipsterConstants.SPRING_PROFILE_DEVELOPMENT)
     public Object h2TCPServer() throws SQLException {
         String port = getValidPortForH2();
@@ -52,5 +59,5 @@ public class DatabaseConfiguration {
             }
         }
         return String.valueOf(port);
-    }
+    }*/
 }

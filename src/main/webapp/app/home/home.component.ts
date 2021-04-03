@@ -15,28 +15,29 @@ export class HomeComponent implements OnInit, AfterViewInit {
   displayedColumns = [
     'Order Id',
     'Order From',
-    'First Name',
-    'Last Name',
+    'Full Name',
     'Total Items',
     'Total Amount Paid',
     'Tip',
     'Address',
     'Zip Code',
     'Phone',
+    'Submitted',
+    'Action'
   ];
-  displayedKeys = ['orderId', 'orderFrom', 'firstName', 'lastName', 'quantity', 'subTotal', 'tip', 'address', 'zipcode', 'phone'];
+  displayedKeys = ['orderId', 'orderFrom', 'fullName', 'quantity', 'subTotal', 'tip', 'address', 'zipcode', 'phone', 'doordashStatus','action'];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('input') input: ElementRef;
   dataSource: OrderSource;
 
-  constructor(private coursesService: OrderDetailsService, private cdf: ChangeDetectorRef) {
-    // this.paginator.pageSize = 20;
+  constructor(private orderDetailService: OrderDetailsService, private cdf: ChangeDetectorRef) {
+     
   }
 
   ngOnInit(): void {
-    this.dataSource = new OrderSource(this.coursesService);
+    this.dataSource = new OrderSource(this.orderDetailService);
     this.dataSource.loadOrders('', '', 'asc', 0, 20);
   }
 
@@ -80,5 +81,11 @@ export class HomeComponent implements OnInit, AfterViewInit {
       this.paginator.pageIndex,
       this.paginator.pageSize
     );
+  }
+
+  sendforAutomation(data): void {
+    this.dataSource.sendforAutomation(data.id).subscribe(response => {
+             this.loadLessonsPage();
+       });
   }
 }

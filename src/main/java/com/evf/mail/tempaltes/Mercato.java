@@ -1,18 +1,27 @@
 package com.evf.mail.tempaltes;
 
 import com.evf.mail.domain.OrderDeliveryEntity;
+import com.evf.mail.domain.ShortNameAndTipDetails;
 import com.evf.mail.service.MailContentExtraction;
+import com.evf.mail.util.PhoneFormatter;
+
 import java.util.List;
+import java.util.Map;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Node;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("Mercato")
 public class Mercato implements MailContentExtraction {
     private final Logger log = LoggerFactory.getLogger(Mercato.class);
 
+    @Autowired
+    Map<String,ShortNameAndTipDetails> areaShortNames;
+    
     public OrderDeliveryEntity extractContent(Document document) {
         List<Node> tables = document.select("body,br").get(0).childNodes();
         String orderId = getValue(tables, " Order Number:").trim();
@@ -27,27 +36,42 @@ public class Mercato implements MailContentExtraction {
         String firstName = fullName.split(" ")[0];
         String lastName = fullName.replace(firstName, "");
         log.info("fullName\t = " + fullName);
-        String phone = getValue(tables, " Customer Phone:").trim();
+        String phone = getValue(tables, " Customer Phone:").trim().replaceAll("[^0-9]", "");
+        phone = new PhoneFormatter(phone).getPhoneNumber();
         log.info("Phone Number\t = " + phone);
-        String deliveryTo = document
+       /* String deliveryTo = document
             .text()
             .substring(document.text().indexOf(" Delivery to:") + " Delivery to:".length(), document.text().indexOf("Items in your order:"))
-            .trim();
-        String zipcode = pinCodeChanges(deliveryTo.substring(deliveryTo.lastIndexOf(",") + 1, deliveryTo.length()).trim());
+            .trim();*/
+        String deliveryTo = document.html().substring(document.html().indexOf(" Delivery to:") + " Delivery to:".length(), document.html().indexOf("Items in your order:")).trim();
+		String[] deliveryArray=deliveryTo.split("<br>");
+		String	address="";
+		String apartment="";
+		if(deliveryArray.length>=6){
+			address=deliveryArray[2].trim()+" "+deliveryArray[4].trim();
+			apartment=deliveryArray[3].trim();
+		}else{
+			address=deliveryArray[2].trim()+" "+deliveryArray[3].trim();
+		}
+		address=address.replace("<b>", "").replace("</b>", "");
+		apartment=apartment.replace("<b>", "").replace("</b>", "");
+        String zipcode = pinCodeChanges(address.substring(address.lastIndexOf(",") + 1, address.length()).trim());
         log.info("zip code\t = " + zipcode);
-        String address = deliveryTo.replace(" Delivery to:", "").replace(fullName, "");
         log.info("address \t = " + address);
+        log.info("apartment \t = " + apartment);
         OrderDeliveryEntity orderDeliveryEntity = new OrderDeliveryEntity();
-
+        orderDeliveryEntity.setFullName(fullName);
+        orderDeliveryEntity.setModifiedName(fullName.concat(areaShortNames.containsKey(zipcode) ?  " ("+areaShortNames.get(zipcode).getAreaShortName()+")" : ""));
         orderDeliveryEntity.setFirstName(firstName);
         orderDeliveryEntity.setLastName(lastName);
         orderDeliveryEntity.setAddress(address);
         orderDeliveryEntity.setPhone(phone);
         orderDeliveryEntity.setQuantity(quantity.longValue());
         orderDeliveryEntity.setSubTotal(subTotal);
-        orderDeliveryEntity.setTip(tip);
+        orderDeliveryEntity.setTip(areaShortNames.containsKey(zipcode) ?areaShortNames.get(zipcode).getTip():tip);
         orderDeliveryEntity.setOrderId(orderId);
         orderDeliveryEntity.setZipcode(Long.parseLong(zipcode));
+        orderDeliveryEntity.setApartment(apartment);
         return orderDeliveryEntity;
     }
 

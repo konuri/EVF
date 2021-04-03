@@ -24,6 +24,6 @@ public class MailConfiguration {
 			e.printStackTrace();
 		}
 		return store;
-	    
     }
+    
 }
