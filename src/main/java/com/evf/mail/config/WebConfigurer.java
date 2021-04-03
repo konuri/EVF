@@ -2,18 +2,25 @@ package com.evf.mail.config;
 
 import static java.net.URLDecoder.decode;
 
-import io.github.jhipster.config.JHipsterConstants;
-import io.github.jhipster.config.JHipsterProperties;
-import io.github.jhipster.config.h2.H2ConfigurationHelper;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
-import java.util.*;
-import javax.servlet.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.server.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.server.MimeMappings;
+import org.springframework.boot.web.server.WebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +32,12 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import com.evf.mail.domain.ShortNameAndTipDetails;
+import com.evf.mail.repository.ShortNameAndTipDetailsRepository;
+
+import io.github.jhipster.config.JHipsterConstants;
+import io.github.jhipster.config.JHipsterProperties;
+
 /**
  * Configuration of web application with Servlet 3.0 APIs.
  */
@@ -34,6 +47,9 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
 
     private final Environment env;
 
+    @Autowired
+    ShortNameAndTipDetailsRepository shortNameAndTipDetailsRepository;
+    
     private final JHipsterProperties jHipsterProperties;
 
     public WebConfigurer(Environment env, JHipsterProperties jHipsterProperties) {
@@ -119,6 +135,16 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
         }
         return new CorsFilter(source);
     }
+    
+    @Bean("areaShortNames")
+    public Map<String,ShortNameAndTipDetails> getAreaAndTipDetails(){
+    	List<ShortNameAndTipDetails> shortNameAndTipDetails= shortNameAndTipDetailsRepository.findAll();
+    	Map<String, ShortNameAndTipDetails> result =
+    			shortNameAndTipDetails.stream().collect(Collectors.toMap(ShortNameAndTipDetails::getZipcode,
+    		                                              Function.identity()));
+    	System.out.println(result);
+    	return result;
+    }
 
     /**
      * Initializes H2 console.
@@ -127,4 +153,6 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
         log.debug("Initialize H2 console");
         H2ConfigurationHelper.initH2Console(servletContext);
     }*/
+    
+    
 }

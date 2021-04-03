@@ -3,8 +3,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { SERVER_API_URL } from 'app/app.constants';
+
 @Injectable({ providedIn: 'root' })
 export class OrderDetailsService {
+
   constructor(private http: HttpClient) {}
 
   getOrderDetails(filter = '', sortBy = '', sortOrder = 'asc', pageNumber = 0, pageSize = 20): Observable<any> {
@@ -18,5 +20,11 @@ export class OrderDetailsService {
           .set('limit', pageSize.toString()),
       })
       .pipe(map(res => res));
+  }
+
+  sendforAutomation(id: string): Observable<any> {
+    const params = new HttpParams();
+    params.set('id', id);
+    return this.http.post(SERVER_API_URL + `/api/order-details/doordashAutoFilling?id=${id}`,'');
   }
 }

@@ -304,7 +304,12 @@
 		    <artifactId>jsoup</artifactId>
 		    <version>1.13.1</version>
 		</dependency>
-		
+		<!-- selenium dependency -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+        </dependency>
+		<!-- selenium dependency -->
 
     </dependencies>
 

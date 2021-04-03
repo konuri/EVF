@@ -1,11 +1,9 @@
 package com.evf.mail.service;
 
-import com.evf.mail.config.MailConfiguration;
-import com.evf.mail.domain.OrderDeliveryEntity;
-import com.evf.mail.repository.OrderDeliveryRepository;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Folder;
@@ -14,6 +12,7 @@ import javax.mail.MessagingException;
 import javax.mail.Store;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.search.FlagTerm;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -23,6 +22,13 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+
+import com.evf.mail.config.MailConfiguration;
+import com.evf.mail.domain.OrderDeliveryEntity;
+import com.evf.mail.domain.ShortNameAndTipDetails;
+import com.evf.mail.repository.OrderDeliveryRepository;
+
+
 
 @Component
 public class MailExtractor {
@@ -36,39 +42,49 @@ public class MailExtractor {
 
     @Autowired
     BeanFactory beanFactory;
+    
+    @Autowired
+    Map<String,ShortNameAndTipDetails> areaShortNames;
 
     private final Map<String, String> templates = new HashMap<>();
 
     private MailExtractor() {
-        templates.put("Drizly", "Drizly");
-        templates.put("Mercato", "Mercato");
-        templates.put("Jon - BeerRightNow.com", "BeerRightNow");
+       // templates.put("Drizly", "Drizly");
+       // templates.put("Mercato", "Mercato");
+       // templates.put("Jon - BeerRightNow.com", "BeerRightNow");
         templates.put("support@delivery.com", "delivery");
-        templates.put("Minibar Delivery", "Minibar");
-        templates.put("orders@eat.grubhub.com", "grubhub");
-        templates.put("orders@sharebite.com", "sharebite");
+       // templates.put("Minibar Delivery", "Minibar");
+        //templates.put("orders@eat.grubhub.com", "grubhub");
+       // templates.put("orders@sharebite.com", "sharebite");
     }
 
     @Scheduled(fixedDelay = 300000, initialDelay = 1000)
     public void fixedDelaySch() {
         try {
+        	System.out.println("areaShortNames ::: "+areaShortNames.size());
             Store store = mailConfiguration.getMailSender();
-            Folder inbox = store.getFolder("Notes");
+            Folder inbox = store.getFolder("Inbox");
             inbox.open(Folder.READ_ONLY);
             // Fetch unseen messages from inbox folder
-            Message[] messages = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), true));
+            Message[] messages = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
             for (Message message : messages) {
-                String from = message.getFrom()[0].toString().split("<")[0].trim();
+                String from = message.getFrom()[0].toString().split("<")[0].trim().replace("\"", "");;
                 log.info(from);
                 String result = getTextFromMessage(message);
+                //System.out.println(result);
                 Document doc = Jsoup.parse(result);
+                
                 if (templates.containsKey(from)) {
+                    log.info(from);
                     try {
+                    	String orderCancelled=doc.select("td:contains(The transaction has been cancelled)").text();
+                    	if(orderCancelled.length()<=0){
                         OrderDeliveryEntity orderDeliveryEntity = beanFactory
                             .getBean(templates.get(from), MailContentExtraction.class)
                             .extractContent(doc);
                         orderDeliveryEntity.setOrderFrom(from);
                         orderDeliveryRepository.save(orderDeliveryEntity);
+                    	}
                     } catch (BeanCreationException e) {
                         e.printStackTrace();
                     } catch (Exception e) {
@@ -103,7 +119,7 @@ public class MailExtractor {
     private String getTextFromMimeMultipart(MimeMultipart mimeMultipart) throws MessagingException, IOException {
         String result = "";
         int count = mimeMultipart.getCount();
-        log.info("count=={}", count);
+        //log.info("count=={}", count);
         for (int i = 0; i < count; i++) {
             BodyPart bodyPart = mimeMultipart.getBodyPart(i);
             if (bodyPart.isMimeType("text/plain")) {

@@ -1,19 +1,27 @@
 package com.evf.mail.tempaltes;
 
-import com.evf.mail.domain.OrderDeliveryEntity;
-import com.evf.mail.service.MailContentExtraction;
-import com.evf.mail.service.MailExtractor;
+import java.util.Map;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import com.evf.mail.domain.OrderDeliveryEntity;
+import com.evf.mail.domain.ShortNameAndTipDetails;
+import com.evf.mail.service.MailContentExtraction;
+import com.evf.mail.util.PhoneFormatter;
 
 @Component("BeerRightNow")
 public class BeerRightNow implements MailContentExtraction {
     private final Logger log = LoggerFactory.getLogger(BeerRightNow.class);
+    
+   @Autowired
+   Map<String,ShortNameAndTipDetails> areaShortNames;
 
     public OrderDeliveryEntity extractContent(Document doc) {
         Elements tables = doc.select("table");
@@ -31,19 +39,21 @@ public class BeerRightNow implements MailContentExtraction {
         log.info("fullName\t = " + fullName);
         String zipcode = getValue(tables, 5, "code").trim();
         log.info("zip code\t = " + zipcode);
-        String phone = getValue(tables, 5, "phone").trim();
+        String phone = getValue(tables, 5, "phone").trim().replaceAll("[^0-9]", "");
+        phone = new PhoneFormatter(phone).getPhoneNumber();
         log.info("Phone Number\t = " + phone);
         String address = getValue(tables, 5, "deliverydress").trim().replace(fullName, "").replace("Recip. Phone: " + phone, "");
         log.info("Delivery Address\t = " + address);
         OrderDeliveryEntity orderDeliveryEntity = new OrderDeliveryEntity();
-
+        orderDeliveryEntity.setFullName(fullName);
+        orderDeliveryEntity.setModifiedName(fullName.concat(areaShortNames.containsKey(zipcode) ?  " ("+areaShortNames.get(zipcode).getAreaShortName()+")" : ""));
         orderDeliveryEntity.setFirstName(firstName);
         orderDeliveryEntity.setLastName(lastName);
         orderDeliveryEntity.setAddress(address);
         orderDeliveryEntity.setPhone(phone);
         orderDeliveryEntity.setQuantity(quantity.longValue());
         orderDeliveryEntity.setSubTotal(subTotal);
-        orderDeliveryEntity.setTip(tip);
+        orderDeliveryEntity.setTip(areaShortNames.containsKey(zipcode) ?areaShortNames.get(zipcode).getTip():tip);
         orderDeliveryEntity.setOrderId(orderId);
         orderDeliveryEntity.setZipcode(Long.parseLong(zipcode));
         return orderDeliveryEntity;

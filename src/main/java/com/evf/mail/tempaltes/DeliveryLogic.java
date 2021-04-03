@@ -1,26 +1,39 @@
 package com.evf.mail.tempaltes;
 
 import com.evf.mail.domain.OrderDeliveryEntity;
+import com.evf.mail.domain.ShortNameAndTipDetails;
 import com.evf.mail.service.MailContentExtraction;
+import com.evf.mail.util.PhoneFormatter;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("delivery")
 public class DeliveryLogic implements MailContentExtraction {
     private final Logger log = LoggerFactory.getLogger(DeliveryLogic.class);
 
+    @Autowired
+    Map<String,ShortNameAndTipDetails> areaShortNames;
+    
     public OrderDeliveryEntity extractContent(Document doc) {
         String deliverTo = doc.getElementById("CUSTOMER-INFO-AND-SPECIAL-INSTRUCTIONS").select("td").first().text();
         String nameAndAddressAndPhone = deliverTo.substring(0, deliverTo.indexOf("(Order placed:")).replace("(Order placed:", "").trim();
-        String phone = nameAndAddressAndPhone.substring(nameAndAddressAndPhone.length() - 12).trim();
-        String nameAndAddress = nameAndAddressAndPhone.replace(phone, "").trim();
+        String phone = nameAndAddressAndPhone.substring(nameAndAddressAndPhone.length() - 12).trim().replaceAll("[^0-9]", "");
+        phone = new PhoneFormatter(phone).getPhoneNumber();
+        String nameAndAddress = nameAndAddressAndPhone.replace(nameAndAddressAndPhone.substring(nameAndAddressAndPhone.length() - 12).trim(), "").trim();
         String fullName = nameAndAddress.substring(0, nameAndAddress.indexOf("(")).trim();
-        String address = nameAndAddress.substring(nameAndAddress.indexOf(")"), nameAndAddress.length()).replace(")", "").trim();
+       // String address = nameAndAddress.substring(nameAndAddress.indexOf(")"), nameAndAddress.length()).replace(")", "").trim();
+		String[] addressAndApartment=doc.getElementById("CUSTOMER-INFO-AND-SPECIAL-INSTRUCTIONS").select("td").first().html().split("<br>");
+		String apartment=addressAndApartment[1].substring(addressAndApartment[1].indexOf("Unit:"));
+		String address=addressAndApartment[1].replace(apartment, "")+addressAndApartment[2];
         Elements qtyHtml = doc.getElementById("ITEMS-TABLE").select("tbody").select("tr");
         Long quantity = null;
         for (int i = 1; i < qtyHtml.size(); i++) {
@@ -36,16 +49,21 @@ public class DeliveryLogic implements MailContentExtraction {
         billInfoValues.replaceAll(String::trim);
         log.info(billInfoValues.toString());
 
-        String subTotal = billInfoValues.get(billInfoKeys.indexOf("Subtotal"));
-        String tip = "0";
+        String subTotal = billInfoValues.get(billInfoKeys.indexOf("Subtotal")).trim();
+        String tip = "$0";
         if (billInfoValues.contains("Delivery fee")) {
-            tip = billInfoValues.get(billInfoKeys.indexOf("Delivery fee"));
+            tip = billInfoValues.get(billInfoKeys.indexOf("Delivery fee")).trim();
         }
         String orderInfo = doc.getElementById("DCOM-LOGO-AND-MERCHANT-INFO").select("tr").select("td").last().text();
 
-        String orderId = orderInfo.substring(orderInfo.indexOf("Order"), orderInfo.length()).replace("Order", "").trim();
         String zipcode = address.substring(address.lastIndexOf(' '), address.length()).trim();
 
+        String orderId = "";
+        if(orderInfo.substring(orderInfo.indexOf("Order"), orderInfo.length()).replace("Order", "").trim().contains("#")){
+        	orderId=orderInfo.substring(orderInfo.indexOf("Order"), orderInfo.length()).replace("Order", "").trim().replace("#", "").trim();
+        }else{
+        	orderId=orderInfo.substring(orderInfo.indexOf("Order"), orderInfo.length()).replace("Order", "").trim().trim();
+        }
         String firstName = fullName.split(" ")[0];
         String lastName = fullName.replace(firstName, "");
         log.info("fullName :: " + fullName);
@@ -56,17 +74,21 @@ public class DeliveryLogic implements MailContentExtraction {
         log.info("tip :: " + tip);
         log.info("zipcode :: " + zipcode);
         log.info("orderId :: " + orderId);
+        log.info("apartment :: " + apartment);
+        
         OrderDeliveryEntity orderDeliveryEntity = new OrderDeliveryEntity();
-
+        orderDeliveryEntity.setFullName(fullName);
+        orderDeliveryEntity.setModifiedName(fullName.concat(areaShortNames.containsKey(zipcode) ?  " ("+areaShortNames.get(zipcode).getAreaShortName()+")" : ""));
         orderDeliveryEntity.setFirstName(firstName);
         orderDeliveryEntity.setLastName(lastName);
         orderDeliveryEntity.setAddress(address);
         orderDeliveryEntity.setPhone(phone);
         orderDeliveryEntity.setQuantity(quantity.longValue());
         orderDeliveryEntity.setSubTotal(subTotal);
-        orderDeliveryEntity.setTip(tip);
+        orderDeliveryEntity.setTip(areaShortNames.containsKey(zipcode) ?areaShortNames.get(zipcode).getTip():tip);
         orderDeliveryEntity.setOrderId(orderId);
         orderDeliveryEntity.setZipcode(Long.parseLong(zipcode));
+        orderDeliveryEntity.setApartment(apartment);
         return orderDeliveryEntity;
     }
 
