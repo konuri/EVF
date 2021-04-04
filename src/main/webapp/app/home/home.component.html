@@ -13,7 +13,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header > {{displayedColumns[i]}} </th>
         <td mat-cell *matCellDef="let row">
           <ng-container [ngSwitch]="displayedColumns[i]">
-          <ng-container *ngSwitchCase="'Action'"><button mat-button-primary (click)="sendforAutomation(row)">Submit</button> 
+          <ng-container *ngSwitchCase="'Action'"><button mat-button-primary  [disabled]="row.doordashStatus" (click)="sendforAutomation(row)">Submit</button> 
           </ng-container>
           <ng-container *ngSwitchDefault>{{row[key]}}</ng-container>
         </ng-container>

@@ -15,9 +15,9 @@
 
 logging:
   level:
-    ROOT: DEBUG
+    ROOT: INFO
     io.github.jhipster: DEBUG
-    com.evf.mail: DEBUG
+    com.evf.mail: INFO
 
 spring:
   profiles:
@@ -115,4 +115,7 @@ jhipster:
 # ===================================================================
 key:
  name: maxcash@gmail.com
- value: Grubhub123! 
+ value: Grubhub123!
+mail:
+ username: evfdrive@gmail.com
+ password: evf!10003
