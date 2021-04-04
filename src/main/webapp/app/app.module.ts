@@ -16,6 +16,9 @@ import { ActiveMenuDirective } from './layouts/navbar/active-menu.directive';
 import { ErrorComponent } from './layouts/error/error.component';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { NgxSpinnerModule } from 'ngx-spinner';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import {MyHttpInterceptor} from './blocks/interceptor/myhttpinterceptor';
 
 @NgModule({
   imports: [
@@ -28,9 +31,14 @@ import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform
     // jhipster-needle-angular-add-module JHipster will add new module here
     EvfEntityModule,
     EvfAppRoutingModule,
+    NgxSpinnerModule,
   ],
   declarations: [MainComponent, NavbarComponent, ErrorComponent, PageRibbonComponent, ActiveMenuDirective, FooterComponent],
   bootstrap: [MainComponent],
-  providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' } }],
+  providers: [{ provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'fill' } },{
+    provide: HTTP_INTERCEPTORS,
+    useClass: MyHttpInterceptor,
+    multi: true,
+  }],
 })
 export class EvfAppModule {}

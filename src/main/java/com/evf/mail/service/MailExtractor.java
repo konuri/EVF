@@ -3,6 +3,7 @@ package com.evf.mail.service;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.mail.BodyPart;
 import javax.mail.Flags;
@@ -13,6 +14,7 @@ import javax.mail.Store;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.search.FlagTerm;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -49,19 +51,19 @@ public class MailExtractor {
     private final Map<String, String> templates = new HashMap<>();
 
     private MailExtractor() {
-       // templates.put("Drizly", "Drizly");
-       // templates.put("Mercato", "Mercato");
-       // templates.put("Jon - BeerRightNow.com", "BeerRightNow");
+        templates.put("Drizly", "Drizly");
+        templates.put("Mercato", "Mercato");
+        templates.put("Jon - BeerRightNow.com", "BeerRightNow");
         templates.put("support@delivery.com", "delivery");
-       // templates.put("Minibar Delivery", "Minibar");
-        //templates.put("orders@eat.grubhub.com", "grubhub");
-       // templates.put("orders@sharebite.com", "sharebite");
+        templates.put("Minibar Delivery", "Minibar");
+        templates.put("orders@eat.grubhub.com", "grubhub");
+        templates.put("orders@sharebite.com", "sharebite");
     }
 
     @Scheduled(fixedDelay = 300000, initialDelay = 1000)
     public void fixedDelaySch() {
         try {
-        	System.out.println("areaShortNames ::: "+areaShortNames.size());
+        	log.info("areaShortNames ::: "+areaShortNames.size());
             Store store = mailConfiguration.getMailSender();
             Folder inbox = store.getFolder("Inbox");
             inbox.open(Folder.READ_ONLY);
@@ -79,25 +81,27 @@ public class MailExtractor {
                     try {
                     	String orderCancelled=doc.select("td:contains(The transaction has been cancelled)").text();
                     	if(orderCancelled.length()<=0){
-                        OrderDeliveryEntity orderDeliveryEntity = beanFactory
-                            .getBean(templates.get(from), MailContentExtraction.class)
-                            .extractContent(doc);
-                        orderDeliveryEntity.setOrderFrom(from);
-                        orderDeliveryRepository.save(orderDeliveryEntity);
-                    	}
+	                        OrderDeliveryEntity orderDeliveryEntity = beanFactory
+	                            .getBean(templates.get(from), MailContentExtraction.class)
+	                            .extractContent(doc);
+	                        orderDeliveryEntity.setOrderFrom(from);
+	                        Optional<OrderDeliveryEntity> orderdetails=orderDeliveryRepository.findAllByOrderId(orderDeliveryEntity.getOrderId());
+	                        if(!orderdetails.isPresent()){
+	                        	orderDeliveryRepository.save(orderDeliveryEntity);
+	                        }
+	                    	}
                     } catch (BeanCreationException e) {
-                        e.printStackTrace();
+                       log.error("Exception in fixedDelaySch ::"+ExceptionUtils.getStackTrace(e));
                     } catch (Exception e) {
-                        e.printStackTrace();
+                    	log.error("Exception in fixedDelaySch ::"+ExceptionUtils.getStackTrace(e));
                     }
                 }
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        	log.error("Exception in fixedDelaySch ::"+ExceptionUtils.getStackTrace(e));
         } catch (MessagingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+           
+        	log.error("Exception in fixedDelaySch ::"+ExceptionUtils.getStackTrace(e));
         }
     }
 

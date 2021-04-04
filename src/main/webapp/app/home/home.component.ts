@@ -1,5 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
 import { fromEvent, merge } from 'rxjs';
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
@@ -12,6 +13,8 @@ import { OrderSource } from './order.service';
   styleUrls: ['home.scss'],
 })
 export class HomeComponent implements OnInit, AfterViewInit {
+  horizontalPosition: MatSnackBarHorizontalPosition = 'right';
+  verticalPosition: MatSnackBarVerticalPosition = 'top';
   displayedColumns = [
     'Order Id',
     'Order From',
@@ -32,7 +35,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
   @ViewChild('input') input: ElementRef;
   dataSource: OrderSource;
 
-  constructor(private orderDetailService: OrderDetailsService, private cdf: ChangeDetectorRef) {
+  constructor(private orderDetailService: OrderDetailsService, private cdf: ChangeDetectorRef, private _snackBar: MatSnackBar) {
      
   }
 
@@ -85,7 +88,18 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   sendforAutomation(data): void {
     this.dataSource.sendforAutomation(data.id).subscribe(response => {
-             this.loadLessonsPage();
+      this.loadLessonsPage();
+      this.openSnackBar(response);
+       },error=>{
+        this.loadLessonsPage();
+        this.openSnackBar(error);
        });
+  }
+  openSnackBar(msg: string): void{
+    this._snackBar.open(msg, 'End now', {
+      duration: 5000,
+      horizontalPosition: this.horizontalPosition,
+      verticalPosition: this.verticalPosition,
+    });
   }
 }

@@ -26,10 +26,9 @@ public class DoorDashSeleniumAutomation {
 	@Value("${key.value}")
 	String password;
 	public Boolean  doordashAutomation(OrderDeliveryEntity entity) throws InterruptedException {
-		 
+		RemoteWebDriver driver=new ChromeDriver();
 		try{
-		    System.setProperty("webdriver.chrome.driver", "F:\\hari\\JavaProjectes\\EVF\\chromedriver.exe"); 
-		    RemoteWebDriver driver=new ChromeDriver();
+		    System.setProperty("webdriver.chrome.driver", "chromedriver.exe"); 
 		    driver.navigate().to("https://identity.doordash.com/auth?scope=*&response_type=code&redirect_uri=https%3A%2F%2Fwww.doordash.com%2Fdrive%2Fportal%2Fauth&state=%2Fdrive%2Fportal&prompt=none&client_id=1649316525849964797");  
 		    waitForSeconds(5);
 		    // Click on the search text box and send value  
@@ -39,10 +38,12 @@ public class DoorDashSeleniumAutomation {
 		    waitForSeconds(20);
 		    WebElement element=driver.findElement(By.xpath("//input[@class='_2BUB1nxRcbQTE9kL7JAY3F']")); 
 		    element.sendKeys(entity.getAddress());
-		    waitForSeconds(5);
+		    waitForSeconds(10);
 		    element.sendKeys(Keys.DOWN);
 		    element.sendKeys(Keys.RETURN);
+		    if(entity.getApartment()!=null && !entity.getApartment().isEmpty() && entity.getApartment().length()>0){
 		    driver.findElement(By.name("dropoffAddressSubpremise")).sendKeys(entity.getApartment());
+		    }
 		    driver.findElement(By.name("firstName")).sendKeys(entity.getFirstName());
 		    driver.findElement(By.name("lastName")).sendKeys(entity.getLastName());
 		    driver.findElement(By.xpath("//input[@class='sc-iELTvK cbAqzK']")).sendKeys(entity.getPhone());
@@ -54,6 +55,7 @@ public class DoorDashSeleniumAutomation {
 		   // driver.quit();
 		}catch(Exception e){
 			log.error("Exception in doordashAutomation ::"+ ExceptionUtils.getStackTrace(e));;
+			driver.quit();
 			return false;
 		}
 	    return true;
