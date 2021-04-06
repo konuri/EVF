@@ -19,6 +19,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     'Order Id',
     'Order From',
     'Full Name',
+    'Region Code',
     'Total Items',
     'Total Amount Paid',
     'Tip',
@@ -28,7 +29,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
     'Submitted',
     'Action'
   ];
-  displayedKeys = ['orderId', 'orderFrom', 'fullName', 'quantity', 'subTotal', 'tip', 'address', 'zipcode', 'phone', 'doordashStatus','action'];
+  displayedKeys = ['orderId', 'orderFrom', 'fullName', 'regionCode', 'quantity', 'subTotal', 'tip', 'address', 'zipcode', 'phone', 'doordashStatus','action'];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;

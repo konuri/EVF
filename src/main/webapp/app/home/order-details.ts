@@ -11,4 +11,5 @@ export interface OrderDetails {
   orderFrom: string;
   orderId: string;
   doordashStatus: boolean
+  regionCode: String
 }

@@ -2,9 +2,6 @@
     <mat-label>Filter</mat-label>
     <input matInput placeholder="Search..." #input />
   </mat-form-field>
-  <div class="spinner-container" *ngIf="dataSource.loading$ | async">
-    <mat-spinner></mat-spinner>
-  </div>
   <div class="mat-elevation-z8">
     <table mat-table [dataSource]="dataSource" matSort class="tablestyle">
 

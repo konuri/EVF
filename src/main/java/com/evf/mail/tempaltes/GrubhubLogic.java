@@ -83,6 +83,7 @@ public class GrubhubLogic implements MailContentExtraction {
         orderDeliveryEntity.setOrderId(orderId);
         orderDeliveryEntity.setZipcode(Long.parseLong(zipcode));
         orderDeliveryEntity.setApartment(apartment);
+        orderDeliveryEntity.setRegionCode(areaShortNames.containsKey(zipcode) ?  areaShortNames.get(zipcode).getAreaShortName() : "NA");
         return orderDeliveryEntity;
     }
 }
