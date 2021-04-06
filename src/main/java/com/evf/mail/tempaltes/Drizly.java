@@ -60,6 +60,7 @@ public class Drizly implements MailContentExtraction {
         orderDeliveryEntity.setZipcode(Long.parseLong(zipcode));
         orderDeliveryEntity.setFullName(fullName);
         orderDeliveryEntity.setApartment(apartment);
+        orderDeliveryEntity.setRegionCode(areaShortNames.containsKey(zipcode) ?  areaShortNames.get(zipcode).getAreaShortName() : "NA");
         return orderDeliveryEntity;
     }
 

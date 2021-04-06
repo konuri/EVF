@@ -60,7 +60,7 @@ public class MailExtractor {
         templates.put("orders@sharebite.com", "sharebite");
     }
 
-    @Scheduled(fixedDelay = 300000, initialDelay = 1000)
+    //@Scheduled(fixedDelay = 300000, initialDelay = 1000)
     public void fixedDelaySch() {
         try {
         	log.info("areaShortNames ::: "+areaShortNames.size());

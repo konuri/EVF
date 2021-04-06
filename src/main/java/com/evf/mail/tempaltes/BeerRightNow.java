@@ -56,6 +56,7 @@ public class BeerRightNow implements MailContentExtraction {
         orderDeliveryEntity.setTip(areaShortNames.containsKey(zipcode) ?areaShortNames.get(zipcode).getTip():tip);
         orderDeliveryEntity.setOrderId(orderId);
         orderDeliveryEntity.setZipcode(Long.parseLong(zipcode));
+        orderDeliveryEntity.setRegionCode(areaShortNames.containsKey(zipcode) ?  areaShortNames.get(zipcode).getAreaShortName() : "NA");
         return orderDeliveryEntity;
     }
 

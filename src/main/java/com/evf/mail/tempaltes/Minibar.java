@@ -45,8 +45,6 @@ public class Minibar implements MailContentExtraction {
         String address = getValue(tables, 4, "deliverydress").trim().replace(fullName, "").replace("Tel: " + phone, "");
         log.info(" Address\t = " + address);
         OrderDeliveryEntity orderDeliveryEntity = new OrderDeliveryEntity();
-        System.out.println("size of the map ::"+areaShortNames.size());
-        System.out.println("area short name ::"+areaShortNames.get(zipcode));
         orderDeliveryEntity.setFullName(fullName);
         orderDeliveryEntity.setModifiedName(fullName.concat(areaShortNames.containsKey(zipcode) ?  " ("+areaShortNames.get(zipcode).getAreaShortName()+")" : ""));
         orderDeliveryEntity.setFirstName(firstName);
@@ -58,6 +56,7 @@ public class Minibar implements MailContentExtraction {
         orderDeliveryEntity.setTip(areaShortNames.containsKey(zipcode) ?areaShortNames.get(zipcode).getTip():tip);
         orderDeliveryEntity.setOrderId(orderId);
         orderDeliveryEntity.setZipcode(Long.parseLong(zipcode));
+        orderDeliveryEntity.setRegionCode(areaShortNames.containsKey(zipcode) ?  areaShortNames.get(zipcode).getAreaShortName() : "NA");
         return orderDeliveryEntity;
     }
 

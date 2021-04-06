@@ -2,13 +2,11 @@ package com.evf.mail.domain;
 
 import java.io.Serializable;
 import java.util.UUID;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 @Table(name = "order_details")
@@ -63,6 +61,9 @@ public class OrderDeliveryEntity extends AbstractAuditingEntity implements Seria
     
     @Column(name = "apartment")
     private String apartment;
+    
+    @Column(name = "region_code")
+    private String regionCode;
 
 	public String getId() {
 		return id;
@@ -183,4 +184,13 @@ public class OrderDeliveryEntity extends AbstractAuditingEntity implements Seria
 	public void setApartment(String apartment) {
 		this.apartment = apartment;
 	}
+
+	public String getRegionCode() {
+		return regionCode;
+	}
+
+	public void setRegionCode(String regionCode) {
+		this.regionCode = regionCode;
+	}
+	
 }
