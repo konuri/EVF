@@ -168,6 +168,11 @@
               <column name="tip" type="varchar(50)"/>
                <column name="order_id" type="varchar(50)"/>
             <column name="order_from" type="varchar(191)"/>
+            <column name="full_name" type="varchar(191)"/>
+            <column name="modified_name" type="varchar(191)"/>
+            <column name="apartment" type="varchar(191)"/>
+            <column name="region_code" type="varchar(191)"/>
+            <column name="doordash_status" type="boolean" valueBoolean="false"/>
              <column name="created_by" type="varchar(50)"/>
             <column name="created_date" type="timestamp"/>
             <column name="last_modified_by" type="varchar(50)"/>

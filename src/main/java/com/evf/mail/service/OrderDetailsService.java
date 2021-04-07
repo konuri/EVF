@@ -1,7 +1,11 @@
 package com.evf.mail.service;
 
+import com.evf.mail.domain.OrderDeliveryEntity;
+import com.evf.mail.repository.OrderDeliveryRepository;
+import com.evf.mail.repository.OrderDetailsSpecification;
+import com.evf.mail.repository.SearchCriteria;
+import java.util.List;
 import java.util.Optional;
-
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -14,22 +18,16 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.evf.mail.domain.OrderDeliveryEntity;
-import com.evf.mail.repository.OrderDeliveryRepository;
-import com.evf.mail.repository.OrderDetailsSpecification;
-import com.evf.mail.repository.SearchCriteria;
-
 @Service
 @Transactional
 public class OrderDetailsService {
-	
-	private final Logger log = LoggerFactory.getLogger(OrderDetailsService.class);
-	
+    private final Logger log = LoggerFactory.getLogger(OrderDetailsService.class);
+
     private final OrderDeliveryRepository orderDeliveryRepository;
 
     private final DoorDashSeleniumAutomation doorDashSeleniumAutomation;
-    
-    public OrderDetailsService(OrderDeliveryRepository orderDeliveryRepository,DoorDashSeleniumAutomation doorDashSeleniumAutomation) {
+
+    public OrderDetailsService(OrderDeliveryRepository orderDeliveryRepository, DoorDashSeleniumAutomation doorDashSeleniumAutomation) {
         this.orderDeliveryRepository = orderDeliveryRepository;
         this.doorDashSeleniumAutomation = doorDashSeleniumAutomation;
     }
@@ -65,18 +63,22 @@ public class OrderDetailsService {
         }
     }
 
-	public boolean doordashAutoFilling(String id) {
-		boolean status=false;
-	    try{
-	    	Optional<OrderDeliveryEntity> orderdetails=orderDeliveryRepository.findById(id);
-	    	if(orderdetails.isPresent()){
-	    		status=doorDashSeleniumAutomation.doordashAutomation(orderdetails.get());
-	    		orderdetails.get().setDoordashStatus(status);
-	    	}
-	    	return status;
-	    }catch(Exception e){
-	    	log.error("Exception in doordashAutoFilling :: " + ExceptionUtils.getStackTrace(e));
-	    	return false;
-	    }
-	}
+    public boolean doordashAutoFilling(String id) {
+        boolean status = false;
+        try {
+            Optional<OrderDeliveryEntity> orderdetails = orderDeliveryRepository.findById(id);
+            if (orderdetails.isPresent()) {
+                status = doorDashSeleniumAutomation.doordashAutomation(orderdetails.get());
+                orderdetails.get().setDoordashStatus(status);
+            }
+            return status;
+        } catch (Exception e) {
+            log.error("Exception in doordashAutoFilling :: " + ExceptionUtils.getStackTrace(e));
+            return false;
+        }
+    }
+
+    public void updateOrderDetails(List<OrderDeliveryEntity> entity) {
+        orderDeliveryRepository.saveAll(entity);
+    }
 }
