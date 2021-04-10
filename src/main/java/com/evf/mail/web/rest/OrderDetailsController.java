@@ -1,19 +1,18 @@
 package com.evf.mail.web.rest;
 
-import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.util.JSONPObject;
+import com.evf.mail.domain.OrderDeliveryEntity;
+import com.evf.mail.service.OrderDetailsService;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
-import com.evf.mail.domain.OrderDeliveryEntity;
-import com.evf.mail.service.OrderDetailsService;
 
 @RestController
 @RequestMapping("/api/order-details")
@@ -34,20 +33,28 @@ public class OrderDetailsController {
     ) {
         return orderDetailsService.getAllOrderDetails(offset, limit, sortBy, sortOrder, filter);
     }
-    
+
     @PostMapping("/doordashAutoFilling")
-    public ResponseEntity<Object>   doordashAutoFilling(@RequestParam("id") String id ){
-    	try{
-    		boolean status=orderDetailsService.doordashAutoFilling(id);
-    		if(status){
-    			return ResponseEntity.ok().body(JSONObject.quote("success"));
-    			//return new ResponseEntity<Object>("success", HttpStatus.OK);
-    		}else{
-    			return ResponseEntity.ok().body(JSONObject.quote("failure"));
-    			//return new ResponseEntity<Object>("failure", HttpStatus.EXPECTATION_FAILED);
-    		}
-    	}catch(Exception e){
-    		throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"Please contact IT Team");
-    	}
+    public ResponseEntity<Object> doordashAutoFilling(@RequestParam("id") String id) {
+        try {
+            boolean status = orderDetailsService.doordashAutoFilling(id);
+            if (status) {
+                return new ResponseEntity<Object>("success", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<Object>("failure", HttpStatus.EXPECTATION_FAILED);
+            }
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Please contact IT Team");
+        }
+    }
+
+    @PostMapping("/updateOrderDetails")
+    public ResponseEntity<Void> updateOrderDetails(@RequestBody List<OrderDeliveryEntity> entity) {
+        try {
+            orderDetailsService.updateOrderDetails(entity);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Please contact IT Team");
+        }
     }
 }

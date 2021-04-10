@@ -4,6 +4,7 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { MatSort } from '@angular/material/sort';
 import { fromEvent, merge } from 'rxjs';
 import { debounceTime, distinctUntilChanged, tap } from 'rxjs/operators';
+import { OrderDetails } from './order-details';
 import { OrderDetailsService } from './order-details.service';
 import { OrderSource } from './order.service';
 
@@ -27,18 +28,29 @@ export class HomeComponent implements OnInit, AfterViewInit {
     'Zip Code',
     'Phone',
     'Submitted',
-    'Action'
+    'Action',
   ];
-  displayedKeys = ['orderId', 'orderFrom', 'fullName', 'regionCode', 'quantity', 'subTotal', 'tip', 'address', 'zipcode', 'phone', 'doordashStatus','action'];
+  displayedKeys = [
+    'orderId',
+    'orderFrom',
+    'fullName',
+    'regionCode',
+    'quantity',
+    'subTotal',
+    'tip',
+    'address',
+    'zipcode',
+    'phone',
+    'doordashStatus',
+    'action',
+  ];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('input') input: ElementRef;
   dataSource: OrderSource;
 
-  constructor(private orderDetailService: OrderDetailsService, private cdf: ChangeDetectorRef, private _snackBar: MatSnackBar) {
-     
-  }
+  constructor(private orderDetailService: OrderDetailsService, private cdf: ChangeDetectorRef, private _snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
     this.dataSource = new OrderSource(this.orderDetailService);
@@ -54,7 +66,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
         tap(() => {
           this.paginator.pageIndex = 0;
           this.paginator.pageSize = 20;
-          this.loadLessonsPage();
+          this.loadOrderDetails();
         })
       )
       .subscribe();
@@ -64,7 +76,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
     // on sort or paginate events, load a new page
     merge(this.sort.sortChange, this.paginator.page)
-      .pipe(tap(() => this.loadLessonsPage()))
+      .pipe(tap(() => this.loadOrderDetails()))
       .subscribe();
 
     this.dataSource.counter$
@@ -77,7 +89,7 @@ export class HomeComponent implements OnInit, AfterViewInit {
       .subscribe();
   }
 
-  loadLessonsPage(): void {
+  loadOrderDetails(): void {
     this.dataSource.loadOrders(
       this.input.nativeElement.value,
       this.sort.active,
@@ -88,19 +100,30 @@ export class HomeComponent implements OnInit, AfterViewInit {
   }
 
   sendforAutomation(data): void {
-    this.dataSource.sendforAutomation(data.id).subscribe(response => {
-      this.loadLessonsPage();
-      this.openSnackBar(response);
-       },error=>{
-        this.loadLessonsPage();
+    this.dataSource.sendforAutomation(data.id).subscribe(
+      response => {
+        this.loadOrderDetails();
+        this.openSnackBar(response);
+      },
+      error => {
+        this.loadOrderDetails();
         this.openSnackBar(error);
-       });
+      }
+    );
   }
-  openSnackBar(msg: string): void{
+  openSnackBar(msg: string): void {
     this._snackBar.open(msg, 'End now', {
       duration: 5000,
       horizontalPosition: this.horizontalPosition,
       verticalPosition: this.verticalPosition,
     });
+  }
+  save(row: OrderDetails): void {
+    this.orderDetailService.save([row]).subscribe(
+      () => {
+        this.openSnackBar('Saved successfully');
+      },
+      () => this.openSnackBar('Failed to save. Please contact support team')
+    );
   }
 }
