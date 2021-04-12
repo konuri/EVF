@@ -35,10 +35,10 @@ public class DoorDashSeleniumAutomation {
 		    driver.findElement(By.id("FieldWrapper-0")).sendKeys(userName);
 		    driver.findElement(By.id("FieldWrapper-1")).sendKeys(password); 
 		    driver.findElement(By.id("login-submit-button")).click();
-		    waitForSeconds(20);
+		    waitForSeconds(15);
 		    WebElement element=driver.findElement(By.xpath("//input[@class='_2BUB1nxRcbQTE9kL7JAY3F']")); 
 		    element.sendKeys(entity.getAddress());
-		    waitForSeconds(10);
+		    waitForSeconds(5);
 		    element.sendKeys(Keys.DOWN);
 		    element.sendKeys(Keys.RETURN);
 		    if(entity.getApartment()!=null && !entity.getApartment().isEmpty() && entity.getApartment().length()>0){
@@ -46,6 +46,7 @@ public class DoorDashSeleniumAutomation {
 		    }
 		    driver.findElement(By.name("firstName")).sendKeys(entity.getFirstName());
 		    driver.findElement(By.name("lastName")).sendKeys(entity.getLastName());
+		    driver.findElement(By.name("businessName")).sendKeys(entity.getRegionCode());
 		    driver.findElement(By.xpath("//input[@class='sc-iELTvK cbAqzK']")).sendKeys(entity.getPhone());
 		    driver.findElement(By.name("orderSize")).sendKeys(entity.getSubTotal().replace("$", ""));
 		    driver.findElement(By.name("driverTip")).sendKeys(entity.getTip().replace("$", ""));

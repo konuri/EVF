@@ -28,7 +28,7 @@ export class OrderDetailsService {
     return this.http.post(SERVER_API_URL + `/api/order-details/doordashAutoFilling?id=${id}`, '', { responseType: 'text' });
   }
 
-  save(rows: OrderDetails[]): Observable<any> {
+  saveAndSubmit(rows: OrderDetails[]): Observable<any> {
     return this.http.post(SERVER_API_URL + `/api/order-details/updateOrderDetails`, rows);
   }
 }

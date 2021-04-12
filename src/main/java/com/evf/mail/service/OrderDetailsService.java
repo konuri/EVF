@@ -79,6 +79,10 @@ public class OrderDetailsService {
     }
 
     public void updateOrderDetails(List<OrderDeliveryEntity> entity) {
+    	try{
         orderDeliveryRepository.saveAll(entity);
+    	}catch (Exception e) {
+            log.error("Exception in doordashAutoFilling :: " + ExceptionUtils.getStackTrace(e));
+        }
     }
 }
