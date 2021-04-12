@@ -49,10 +49,15 @@ public class OrderDetailsController {
     }
 
     @PostMapping("/updateOrderDetails")
-    public ResponseEntity<Void> updateOrderDetails(@RequestBody List<OrderDeliveryEntity> entity) {
+    public ResponseEntity<Object> updateOrderDetails(@RequestBody List<OrderDeliveryEntity> entity) {
         try {
             orderDetailsService.updateOrderDetails(entity);
-            return ResponseEntity.ok().build();
+            boolean status = orderDetailsService.doordashAutoFilling(entity.get(0).getId());
+            if (status) {
+                return new ResponseEntity<Object>("success", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<Object>("failure", HttpStatus.EXPECTATION_FAILED);
+            }
         } catch (Exception e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Please contact IT Team");
         }

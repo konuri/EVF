@@ -118,12 +118,14 @@ export class HomeComponent implements OnInit, AfterViewInit {
       verticalPosition: this.verticalPosition,
     });
   }
-  save(row: OrderDetails): void {
-    this.orderDetailService.save([row]).subscribe(
-      () => {
-        this.openSnackBar('Saved successfully');
+  saveAndSubmit(row: OrderDetails): void {
+    this.orderDetailService.saveAndSubmit([row]).subscribe(
+      (response) => {
+        this.loadOrderDetails();
+        this.openSnackBar(response);
       },
-      () => this.openSnackBar('Failed to save. Please contact support team')
-    );
+      (error) => { this.loadOrderDetails();
+              this.openSnackBar(error);
+        });
   }
 }
