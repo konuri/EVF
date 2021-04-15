@@ -27,11 +27,11 @@ public class OrderDetailsController {
     public Page<OrderDeliveryEntity> getOrderDetails(
         @RequestParam(defaultValue = "0") Integer offset,
         @RequestParam(defaultValue = "0") Integer limit,
-        @RequestParam(defaultValue = "orderFrom") String sortBy,
-        @RequestParam(defaultValue = "asc") String sortOrder,
+        @RequestParam(defaultValue = "createdDate") String sortBy,
+        @RequestParam(defaultValue = "desc") String sortOrder,
         @RequestParam(required = false) String filter
     ) {
-        return orderDetailsService.getAllOrderDetails(offset, limit, sortBy, sortOrder, filter);
+        return orderDetailsService.getAllOrderDetails(offset, limit, sortBy, "desc", filter);
     }
 
     @PostMapping("/doordashAutoFilling")

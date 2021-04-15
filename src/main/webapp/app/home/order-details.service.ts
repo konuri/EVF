@@ -9,7 +9,7 @@ import { OrderDetails } from './order-details';
 export class OrderDetailsService {
   constructor(private http: HttpClient) {}
 
-  getOrderDetails(filter = '', sortBy = '', sortOrder = 'asc', pageNumber = 0, pageSize = 20): Observable<any> {
+  getOrderDetails(filter = '', sortBy = '', sortOrder = 'desc', pageNumber = 0, pageSize = 20): Observable<any> {
     return this.http
       .get(SERVER_API_URL + '/api/order-details/', {
         params: new HttpParams()
@@ -29,6 +29,6 @@ export class OrderDetailsService {
   }
 
   saveAndSubmit(rows: OrderDetails[]): Observable<any> {
-    return this.http.post(SERVER_API_URL + `/api/order-details/updateOrderDetails`, rows);
+    return this.http.post(SERVER_API_URL + `/api/order-details/updateOrderDetails`, rows, { responseType: 'text' });
   }
 }

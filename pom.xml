@@ -6,7 +6,7 @@
     <groupId>com.evf.mail</groupId>
     <artifactId>evf</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
     <name>EVF</name>
 
     <repositories>
@@ -931,7 +931,7 @@
                 <!-- default Spring profiles -->
                 <spring.profiles.active>dev${profile.tls}${profile.no-liquibase}</spring.profiles.active>
             </properties>
-            <!-- <build>
+             <build>
             <plugins>
              <plugin>
                         <groupId>com.github.eirslett</groupId>
@@ -984,7 +984,7 @@
                         </executions>
                     </plugin>
             </plugins>
-            </build> -->
+            </build> 
         </profile>
         <profile>
             <id>prod</id>

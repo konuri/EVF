@@ -62,7 +62,7 @@ public class GrubhubLogic implements MailContentExtraction {
         }
         String firstName = fullName.split(" ")[0];
         String lastName = fullName.replace(firstName, "");
-        log.info("Phone :: " + fullName);
+        log.info("fullName :: " + fullName);
         log.info("Phone :: " + phone);
         log.info("Address :: " + address);
         log.info("subTotal :: " + subTotal);
@@ -81,7 +81,7 @@ public class GrubhubLogic implements MailContentExtraction {
         orderDeliveryEntity.setSubTotal(subTotal);
         orderDeliveryEntity.setTip(areaShortNames.containsKey(zipcode) ?areaShortNames.get(zipcode).getTip():tip);
         orderDeliveryEntity.setOrderId(orderId);
-        orderDeliveryEntity.setZipcode(Long.parseLong(zipcode));
+        orderDeliveryEntity.setZipcode(zipcode!=null ? Long.parseLong(zipcode) : null);
         orderDeliveryEntity.setApartment(apartment);
         orderDeliveryEntity.setRegionCode(areaShortNames.containsKey(zipcode) ?  areaShortNames.get(zipcode).getAreaShortName() : "NA");
         return orderDeliveryEntity;
