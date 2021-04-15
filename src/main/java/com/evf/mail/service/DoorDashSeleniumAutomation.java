@@ -1,15 +1,18 @@
 package com.evf.mail.service;
 
+
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import com.evf.mail.domain.OrderDeliveryEntity;
@@ -26,10 +29,12 @@ public class DoorDashSeleniumAutomation {
 	@Value("${key.value}")
 	String password;
 	public Boolean  doordashAutomation(OrderDeliveryEntity entity) throws InterruptedException {
-		RemoteWebDriver driver=new ChromeDriver();
+		WebDriver driver=null;
 		try{
-		    System.setProperty("webdriver.chrome.driver", "chromedriver.exe"); 
-		    driver.navigate().to("https://identity.doordash.com/auth?scope=*&response_type=code&redirect_uri=https%3A%2F%2Fwww.doordash.com%2Fdrive%2Fportal%2Fauth&state=%2Fdrive%2Fportal&prompt=none&client_id=1649316525849964797");  
+			Resource   resource = new ClassPathResource("chromedriver.exe");
+			System.setProperty("webdriver.chrome.driver", resource.getFile().getPath());
+			driver=new ChromeDriver();
+			driver.navigate().to("https://identity.doordash.com/auth?scope=*&response_type=code&redirect_uri=https%3A%2F%2Fwww.doordash.com%2Fdrive%2Fportal%2Fauth&state=%2Fdrive%2Fportal&prompt=none&client_id=1649316525849964797");  
 		    waitForSeconds(5);
 		    // Click on the search text box and send value  
 		    driver.findElement(By.id("FieldWrapper-0")).sendKeys(userName);
@@ -55,6 +60,7 @@ public class DoorDashSeleniumAutomation {
 		    
 		   // driver.quit();
 		}catch(Exception e){
+			e.printStackTrace();
 			log.error("Exception in doordashAutomation ::"+ ExceptionUtils.getStackTrace(e));;
 			driver.quit();
 			return false;
