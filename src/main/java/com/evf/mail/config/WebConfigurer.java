@@ -14,9 +14,13 @@ import java.util.stream.Collectors;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.WebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -26,6 +30,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -46,6 +52,12 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
 
     private final Environment env;
 
+	@Value("${key.name}")
+	String userName;
+	
+	@Value("${key.value}")
+	String password;
+	
     @Autowired
     ShortNameAndTipDetailsRepository shortNameAndTipDetailsRepository;
     
@@ -144,6 +156,27 @@ public class WebConfigurer implements ServletContextInitializer, WebServerFactor
     	return result;
     }
 
+    @Bean("webDriverConnection")
+    public ChromeDriver webdrive(){
+    	try{
+    	Resource   resource = new ClassPathResource("chromedriver.exe");
+		System.setProperty("webdriver.chrome.driver", resource.getFile().getPath());
+		ChromeDriver driver=new ChromeDriver();
+		driver.navigate().to("https://identity.doordash.com/auth?scope=*&response_type=code&redirect_uri=https%3A%2F%2Fwww.doordash.com%2Fdrive%2Fportal%2Fauth&state=%2Fdrive%2Fportal&prompt=none&client_id=1649316525849964797");  
+		waitForSeconds(10);
+	    // Click on the search text box and send value  
+	    driver.findElement(By.id("FieldWrapper-0")).sendKeys(userName);
+	    driver.findElement(By.id("FieldWrapper-1")).sendKeys(password); 
+	    driver.findElement(By.id("login-submit-button")).click();
+	    return  driver;
+    	}catch(Exception e) {
+    		return null;
+    	}
+    }
+    
+	public static void waitForSeconds(long sec) throws InterruptedException{
+		Thread.sleep(sec *1000);
+	}
     /**
      * Initializes H2 console.
      */

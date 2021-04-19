@@ -15,10 +15,10 @@ import org.springframework.context.annotation.Configuration;
 /*
  * Configures the console and Logstash log appenders from the app properties
  */
-@Configuration
+//@Configuration
 public class LoggingConfiguration {
 
-    public LoggingConfiguration(
+    /*public LoggingConfiguration(
         @Value("${spring.application.name}") String appName,
         @Value("${server.port}") String serverPort,
         JHipsterProperties jHipsterProperties,
@@ -47,5 +47,5 @@ public class LoggingConfiguration {
         if (jHipsterProperties.getMetrics().getLogs().isEnabled()) {
             setMetricsMarkerLogbackFilter(context, loggingProperties.isUseJsonFormat());
         }
-    }
+    }*/
 }
