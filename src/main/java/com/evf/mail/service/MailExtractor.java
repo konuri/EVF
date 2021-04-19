@@ -60,15 +60,15 @@ public class MailExtractor {
         templates.put("orders@sharebite.com", "sharebite");
     }
 
-    @Scheduled(fixedDelay = 300000, initialDelay = 1000)
+   //@Scheduled(fixedDelay = 300000, initialDelay = 1000)
     public void fixedDelaySch() {
         try {
             Store store = mailConfiguration.getMailSender();
             Folder inbox = store.getFolder("Inbox");
-            inbox.open(Folder.READ_WRITE);
+            inbox.open(Folder.READ_ONLY);
             // Fetch unseen messages from inbox folder
             Message[] messages = inbox.search(new FlagTerm(new Flags(Flags.Flag.SEEN), false));
-            System.out.println("total unseen messages  count"+ messages.length);
+            log.info("total unseen messages  count"+ messages.length);
             for (Message message : messages) {
             	log.info("row order from ::"+message.getFrom()[0]);
                 String from = message.getFrom()[0].toString().split("<")[0].trim().replace("\"", "");;
