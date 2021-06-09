@@ -39,6 +39,9 @@ public class GrubhubLogic implements MailContentExtraction {
         String zipcode = null;
         for (Element element : doc.getElementsByAttributeValue("data-section", "diner")) {
             phone = element.getElementsByAttributeValue("data-field", "phone").text().replaceAll("[^0-9]", "");
+    		if(phone.length()>10){
+    			phone=phone.substring(phone.length()-10);
+    		}
             phone = new PhoneFormatter(phone).getPhoneNumber();
             address = element.getElementsByAttributeValue("data-field", "address1").text();
             apartment = element.getElementsByAttributeValue("data-field", "address2").text();
